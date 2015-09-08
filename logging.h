@@ -150,6 +150,31 @@ namespace templog {
 #	define TEMPLOG_SOURCE_ACCESS_FILE(Obj_)              Obj_.file_data_                                                //!< accessing source info file data members
 #	define TEMPLOG_SOURCE_ACCESS_LINE(Obj_)              Obj_.line_data_                                                //!< accessing source info line data members
 
+#	if defined(TEMPLOG_DLL) && defined(TEMPLOG_BUILD_DLL)
+		/**
+		 * TEMPLOG_DLL must be defined by applications that are linking against the DLL version of the templog library.
+		 * TEMPLOG_BUILD_DLL is defined when compiling the DLL version of the library.
+		 */
+#		error "You may not have both TEMPLOG_DLL and TEMPLOG_BUILD_DLL defined"
+#	endif
+
+/**
+ * TEMPLOG_API is used to declare public API classes / functions for export from the DLL / shared library / dynamic library
+ */
+#	if defined(_WIN32) && defined(TEMPLOG_BUILD_DLL)
+		// We are building templog as a Win32 DLL
+#		define TEMPLOG_API __declspec(dllexport)
+#	elif defined(_WIN32) && defined(TEMPLOG_DLL)
+		// We are calling templog as a Win32 DLL
+#		define TEMPLOG_API __declspec(dllimport)
+#	elif defined(__GNUC__) && defined(TEMPLOG_BUILD_DLL)
+		// We are building templog as a shared / dynamic library
+#		define TEMPLOG_API __attribute__((visibility("default")))
+#	else
+		// We are building or calling templog as a static library
+#		define TEMPLOG_API
+#	endif
+
 	/******************************************************************************************/
 	/* severities and audiences */
 
@@ -201,22 +226,22 @@ namespace templog {
 	/**
 	* Retrieves a textual description for a severity
 	*/
-	const char* get_name(severity sev);
+	TEMPLOG_API const char* get_name(severity sev);
 
 	/**
 	* Retrieves a short (three letters) textual description for a severity
 	*/
-	const char* get_short_name(severity sev);
+	TEMPLOG_API const char* get_short_name(severity sev);
 
 	/**
 	* Retrieves a textual description for an audience
 	*/
-	const char* get_name(audience aud);
+	TEMPLOG_API const char* get_name(audience aud);
 
 	/**
 	* Retrieves a short (three letters) textual description for an audience
 	*/
-	const char* get_short_name(audience aud);
+	TEMPLOG_API const char* get_short_name(audience aud);
 
 	/******************************************************************************************/
 	/* log intermediate */
@@ -651,7 +676,7 @@ namespace templog {
 
 			static bool is_writing(int /*sev*/, int /*aud*/){return true;}
 
-			static void write_str(const std::string& str);
+			TEMPLOG_API static void write_str(const std::string& str);
 		};
 #	endif //defined(_WIN32)
 
