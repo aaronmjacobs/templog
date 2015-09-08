@@ -1,2 +1,2 @@
 # templog
-Mirror of templog, a very small and lightweight C++ library
+Mirror of templog (http://www.templog.org/), a very small and lightweight C++ library by Hendrik Schober
